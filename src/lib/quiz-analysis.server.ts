@@ -140,7 +140,6 @@ export function computeResult(answers: Answers, resultId: string): ComputedResul
     totalScore += option.score * weight;
     totalMax += 3 * weight;
 
-    for (const dimension of question.dimensions ?? []) void dimension;
     for (const dimension of option.dimensions) {
       const current = totals.get(dimension) ?? { score: 0, max: 0 };
       current.score += option.score * weight;
