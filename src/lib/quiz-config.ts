@@ -365,14 +365,17 @@ export const CORE_QUESTIONS = QUESTIONS.filter((q) => q.stage === "core");
 export const REFINEMENT_QUESTIONS = QUESTIONS.filter((q) => q.stage === "refinement");
 export const CRUCIAL_QUESTION = QUESTIONS.find((q) => q.stage === "crucial")!;
 
+/**
+ * Faixas de resultado. Apenas o título e a chamada da prévia ficam disponíveis
+ * no navegador. O texto completo e a lista "o que observar" vivem em
+ * `quiz-analysis.server.ts` e só são entregues após pagamento confirmado.
+ */
 export type ResultLevel = {
   level: 1 | 2 | 3 | 4;
   /** limite superior de intensidade (0–100), inclusivo */
   maxIntensity: number;
   title: string;
-  text: string;
   previewLead: string;
-  observe: string[];
 };
 
 export const RESULT_LEVELS: ResultLevel[] = [
@@ -380,57 +383,29 @@ export const RESULT_LEVELS: ResultLevel[] = [
     level: 1,
     maxIntensity: 24,
     title: "Poucos sinais identificados",
-    text: "Suas respostas apresentam poucos padrões comportamentais preocupantes neste momento. Isso não significa que todos os aspectos da relação estejam bem ou mal, mas os sinais relatados não indicam uma concentração elevada de comportamentos problemáticos.",
-    previewLead: "Identificamos poucos padrões de risco, e alguns pontos que ainda merecem observação.",
-    observe: [
-      "Como cada um responde quando o outro levanta um incômodo.",
-      "Se os combinados feitos em momentos calmos se sustentam nos momentos de conflito.",
-      "Se você consegue falar o que sente sem ensaiar antes.",
-    ],
+    previewLead:
+      "Identificamos poucos padrões de risco, e alguns pontos que ainda merecem observação.",
   },
   {
     level: 2,
     maxIntensity: 44,
     title: "Alguns padrões merecem atenção",
-    text: "Suas respostas apresentam alguns comportamentos que merecem ser observados com mais cuidado, especialmente em situações de conflito, limites e comunicação.",
     previewLead: "Identificamos um padrão que merece sua atenção.",
-    observe: [
-      "Com que frequência a conversa sai do assunto inicial.",
-      "O que acontece nas primeiras horas depois de um desentendimento.",
-      "Quantas vezes você reformula o que sente para evitar uma reação.",
-      "Se pedir desculpas virou algo que só parte de um lado.",
-    ],
   },
   {
     level: 3,
     maxIntensity: 66,
     title: "Padrões significativos merecem atenção",
-    text: "Suas respostas mostram uma concentração relevante de comportamentos que podem estar afetando a dinâmica da relação, especialmente relacionados à responsabilidade, limites, empatia e conflitos.",
     previewLead: "Identificamos uma concentração relevante de padrões que merecem sua atenção.",
-    observe: [
-      "O que acontece imediatamente depois de você dizer um 'não'.",
-      "Se as discussões terminam com o assunto resolvido ou com você se explicando.",
-      "Se sua leitura dos fatos costuma ser contestada depois.",
-      "Como você se sente fisicamente após determinadas conversas.",
-      "Quais assuntos você já parou de trazer para evitar desgaste.",
-    ],
   },
   {
     level: 4,
     maxIntensity: 100,
     title: "Um padrão intenso merece atenção",
-    text: "Suas respostas apresentam uma concentração elevada de comportamentos preocupantes e um impacto emocional relevante. Isso não permite diagnosticar ninguém, mas indica que vale a pena olhar com bastante atenção para os padrões descritos.",
     previewLead: "Identificamos um padrão intenso, com impacto emocional relevante.",
-    observe: [
-      "Se você tem registrado (para si mesma) o que realmente foi dito nas conversas.",
-      "Se existe alguém de confiança acompanhando o que você está vivendo.",
-      "O que acontece com você nas horas seguintes a uma discussão.",
-      "Se limites já comunicados continuam sendo ultrapassados.",
-      "Quanto da sua energia diária vai para administrar a reação dele.",
-      "Se existe algum momento em que você se sente insegura fisicamente.",
-    ],
   },
 ];
+
 
 export const PRODUCT = {
   id: "analise-completa-v1",
