@@ -14,7 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      payments: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          currency: string
+          id: string
+          paid_at: string | null
+          payment_status: string
+          product_id: string
+          provider: string
+          provider_payment_id: string | null
+          raw_event: Json | null
+          result_id: string | null
+          session_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          currency?: string
+          id?: string
+          paid_at?: string | null
+          payment_status?: string
+          product_id: string
+          provider?: string
+          provider_payment_id?: string | null
+          raw_event?: Json | null
+          result_id?: string | null
+          session_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          paid_at?: string | null
+          payment_status?: string
+          product_id?: string
+          provider?: string
+          provider_payment_id?: string | null
+          raw_event?: Json | null
+          result_id?: string | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_sessions: {
+        Row: {
+          answers: Json
+          created_at: string
+          current_stage: string
+          id: string
+          lead_email: string | null
+          lead_name: string | null
+          result: Json | null
+          result_id: string | null
+          result_unlocked: boolean
+          session_token: string
+          updated_at: string
+          utm: Json
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          current_stage?: string
+          id?: string
+          lead_email?: string | null
+          lead_name?: string | null
+          result?: Json | null
+          result_id?: string | null
+          result_unlocked?: boolean
+          session_token: string
+          updated_at?: string
+          utm?: Json
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          current_stage?: string
+          id?: string
+          lead_email?: string | null
+          lead_name?: string | null
+          result?: Json | null
+          result_id?: string | null
+          result_unlocked?: boolean
+          session_token?: string
+          updated_at?: string
+          utm?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
