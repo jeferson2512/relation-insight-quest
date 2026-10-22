@@ -1,3 +1,4 @@
+import type { Json } from "@/integrations/supabase/types";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -120,7 +121,7 @@ export const finalizeResult = createServerFn({ method: "POST" })
       .from("quiz_sessions")
       .update({
         answers: data.answers,
-        result: result as unknown as Record<string, unknown>,
+        result: result as unknown as Json,
         result_id: resultId,
         current_stage: "preview",
       })
@@ -140,9 +141,10 @@ export const finalizeResult = createServerFn({ method: "POST" })
 export const getSessionState = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({ token: z.string().min(10) }).parse(data))
   .handler(async ({ data }) => {
-    const { buildFullAnalysis, type ComputedResult } = await import("./quiz-analysis.server").then(
-      (m) => ({ buildFullAnalysis: m.buildFullAnalysis, type: null as never }),
-    );
+    const { buildFullAnalysis } = await import("./quiz-analysis.server").then((m) => ({
+      buildFullAnalysis: m.buildFullAnalysis,
+      type: null as never,
+    }));
     const db = await admin();
     const session = await loadSession(data.token);
     if (!session) return null;
@@ -156,8 +158,7 @@ export const getSessionState = createServerFn({ method: "POST" })
       .maybeSingle();
 
     const result = session.result as
-      | (Awaited<ReturnType<typeof import("./quiz-analysis.server").computeResult>> | null)
-      | null;
+      (Awaited<ReturnType<typeof import("./quiz-analysis.server").computeResult>> | null) | null;
 
     const unlocked = session.result_unlocked === true;
 
@@ -182,9 +183,7 @@ export const getSessionState = createServerFn({ method: "POST" })
 
 /** Cria o pedido de pagamento (pendente) e devolve a URL de checkout do gateway. */
 export const createCheckout = createServerFn({ method: "POST" })
-  .inputValidator((data) =>
-    z.object({ token: z.string().min(10), utm: utmSchema }).parse(data),
-  )
+  .inputValidator((data) => z.object({ token: z.string().min(10), utm: utmSchema }).parse(data))
   .handler(async ({ data }) => {
     const db = await admin();
     const session = await loadSession(data.token);
@@ -207,10 +206,7 @@ export const createCheckout = createServerFn({ method: "POST" })
 
     if (error || !payment) throw new Error("Não foi possível iniciar o pagamento.");
 
-    await db
-      .from("quiz_sessions")
-      .update({ current_stage: "checkout" })
-      .eq("id", session.id);
+    await db.from("quiz_sessions").update({ current_stage: "checkout" }).eq("id", session.id);
 
     const base = process.env["CAKTO_CHECKOUT_URL"] ?? PRODUCT.checkoutUrl;
     const url = new URL(base);
