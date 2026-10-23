@@ -88,7 +88,11 @@ function Index() {
           </div>
           <figure className="book-hero">
             <img
-              src="/images/mockup-side-hustle.png"
+              src="/images/mockup-side-hustle-800.webp"
+              srcSet="/images/mockup-side-hustle-480.webp 480w, /images/mockup-side-hustle-800.webp 800w, /images/mockup-side-hustle-1254.webp 1254w"
+              sizes="(max-width: 760px) calc(100vw - 40px), (max-width: 1200px) 46vw, 560px"
+              width={1254}
+              height={1254}
               alt="Mockup do e-book Side Hustle com IA, com tablet, celular e materiais de apoio"
               fetchPriority="high"
             />
