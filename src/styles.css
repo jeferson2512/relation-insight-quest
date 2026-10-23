@@ -1095,3 +1095,12 @@ details p {
   letter-spacing: 0.01em;
   color: #f2ead7;
 }
+
+/* Hide the complete Lovable branding widget, including its close control. */
+#lovable-badge,
+#lovable-badge-close,
+#lovable-badge-cta {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
