@@ -491,10 +491,10 @@ function QuestionStep({
   eyebrow: string;
   progress: number;
   question: Question;
-  selected?: string;
+  selected?: string | undefined;
   onSelect: (id: string) => void;
   onNext: () => void;
-  onBack?: () => void;
+  onBack?: (() => void) | undefined;
   nextLabel: string;
 }) {
   return (
@@ -603,7 +603,7 @@ function Crucial({
   onSelect,
   onNext,
 }: {
-  selected?: string;
+  selected?: string | undefined;
   onSelect: (id: string) => void;
   onNext: () => void;
 }) {

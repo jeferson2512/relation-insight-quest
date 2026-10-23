@@ -121,7 +121,7 @@ export const finalizeResult = createServerFn({ method: "POST" })
       .from("quiz_sessions")
       .update({
         answers: data.answers,
-        result: result as unknown as Record<string, unknown>,
+        result: result as never,
         result_id: resultId,
         current_stage: "preview",
       })

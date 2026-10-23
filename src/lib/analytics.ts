@@ -35,7 +35,7 @@ export function track(event: QuizEvent, params: Record<string, unknown> = {}) {
   window.gtag?.("event", event, params);
   window.fbq?.("trackCustom", event, params);
   const standard = META_STANDARD[event];
-  if (standard) window.fbq?.("track", standard.name, standard.params?.(params) ?? {}, params.eventId ? { eventID: params.eventId } : undefined);
+  if (standard) window.fbq?.("track", standard.name, standard.params?.(params) ?? {}, params["eventId"] ? { eventID: params["eventId"] } : undefined);
 }
 
 const META_STANDARD: Partial<
@@ -44,11 +44,11 @@ const META_STANDARD: Partial<
   quiz_started: { name: "ViewContent" },
   checkout_started: {
     name: "InitiateCheckout",
-    params: (p) => ({ value: p.value, currency: p.currency }),
+    params: (p) => ({ value: p["value"], currency: p["currency"] }),
   },
   result_unlocked: {
     name: "Purchase",
-    params: (p) => ({ value: p.value, currency: p.currency }),
+    params: (p) => ({ value: p["value"], currency: p["currency"] }),
   },
 };
 
