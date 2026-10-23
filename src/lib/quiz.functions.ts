@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { PRODUCT } from "./quiz-config";
+import type { ComputedResult } from "./quiz-analysis.server";
 
 const utmSchema = z.record(z.string()).default({});
 
@@ -140,9 +141,7 @@ export const finalizeResult = createServerFn({ method: "POST" })
 export const getSessionState = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({ token: z.string().min(10) }).parse(data))
   .handler(async ({ data }) => {
-    const { buildFullAnalysis, type ComputedResult } = await import("./quiz-analysis.server").then(
-      (m) => ({ buildFullAnalysis: m.buildFullAnalysis, type: null as never }),
-    );
+    const { buildFullAnalysis } = await import("./quiz-analysis.server");
     const db = await admin();
     const session = await loadSession(data.token);
     if (!session) return null;
@@ -155,9 +154,7 @@ export const getSessionState = createServerFn({ method: "POST" })
       .limit(1)
       .maybeSingle();
 
-    const result = session.result as
-      | (Awaited<ReturnType<typeof import("./quiz-analysis.server").computeResult>> | null)
-      | null;
+    const result = session.result as ComputedResult | null;
 
     const unlocked = session.result_unlocked === true;
 
