@@ -34,7 +34,23 @@ export function track(event: QuizEvent, params: Record<string, unknown> = {}) {
   window.dataLayer.push(payload);
   window.gtag?.("event", event, params);
   window.fbq?.("trackCustom", event, params);
+  const standard = META_STANDARD[event];
+  if (standard) window.fbq?.("track", standard.name, standard.params?.(params) ?? {}, params.eventId ? { eventID: params.eventId } : undefined);
 }
+
+const META_STANDARD: Partial<
+  Record<QuizEvent, { name: string; params?: (p: Record<string, unknown>) => Record<string, unknown> }>
+> = {
+  quiz_started: { name: "ViewContent" },
+  checkout_started: {
+    name: "InitiateCheckout",
+    params: (p) => ({ value: p.value, currency: p.currency }),
+  },
+  result_unlocked: {
+    name: "Purchase",
+    params: (p) => ({ value: p.value, currency: p.currency }),
+  },
+};
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 const UTM_STORAGE_KEY = "quiz_utm";
