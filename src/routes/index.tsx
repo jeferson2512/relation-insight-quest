@@ -88,7 +88,7 @@ function Index() {
           </div>
           <figure className="book-hero">
             <img
-              src="/images/mockup-oferta-ia-br.jpg"
+              src="/images/mockup-side-hustle.png"
               alt="Mockup do e-book Side Hustle com IA, com tablet, celular e materiais de apoio"
               fetchPriority="high"
             />
