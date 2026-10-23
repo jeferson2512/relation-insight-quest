@@ -1,4 +1,3 @@
-import type { Json } from "@/integrations/supabase/types";
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
@@ -89,7 +88,7 @@ export const Route = createFileRoute("/api/public/webhooks/cakto")({
           .update({
             payment_status: status,
             provider_payment_id: payload.data?.id ?? null,
-            raw_event: payload as unknown as Json,
+            raw_event: payload as never,
             paid_at: status === "approved" ? new Date().toISOString() : null,
           })
           .eq("id", payment.id);
