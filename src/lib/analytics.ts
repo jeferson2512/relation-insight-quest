@@ -48,7 +48,11 @@ export function captureUtm(): Record<string, string> {
     if (value) found[key] = value;
   }
   if (Object.keys(found).length > 0) {
-    localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(found));
+    try {
+      localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(found));
+    } catch {
+      // O checkout continua recebendo as UTMs mesmo com armazenamento bloqueado.
+    }
     return found;
   }
   try {

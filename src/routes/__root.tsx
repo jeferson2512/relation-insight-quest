@@ -74,7 +74,16 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
-    scripts: [{ src: "/meta-pixel.js", async: true }],
+    scripts: [
+      { src: "/meta-pixel.js", async: true },
+      {
+        src: "https://cdn.utmify.com.br/scripts/utms/latest.js",
+        async: true,
+        defer: true,
+        "data-utmify-prevent-xcod-sck": "",
+        "data-utmify-prevent-subids": "",
+      },
+    ],
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },

@@ -3,12 +3,15 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, BookOpen, GitBranch, ShieldCheck, Rocket } from "lucide-react";
 import { CHECKOUT, EXCLUSIVE_CHECKOUT, essentialItems, completeItems } from "../lib/mapa-quiz";
 import { offerContents, jobs, audiences, reasons, how } from "../lib/offer-content";
+import { captureUtm, withUtm } from "../lib/analytics";
 export const Route = createFileRoute("/")({ component: Index });
 function Index() {
   const [notice, setNotice] = useState("");
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [checkoutUtm, setCheckoutUtm] = useState<Record<string, string>>({});
   const upgradeDialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
+    setCheckoutUtm(captureUtm());
     window.history.scrollRestoration = "manual";
     if (window.location.hash) {
       window.history.replaceState(
@@ -51,7 +54,7 @@ function Index() {
       setNotice("Checkout indisponível.");
       return;
     }
-    window.location.assign(url);
+    window.location.assign(withUtm(url, captureUtm()));
   }
   return (
     <div className="new-site">
@@ -295,7 +298,7 @@ function Index() {
           <strong>R$ 27,90</strong>
           <small>Pagamento único • Acesso vitalício ao conteúdo</small>
         </div>
-        <a className="gold-button" href={EXCLUSIVE_CHECKOUT}>
+        <a className="gold-button" href={withUtm(EXCLUSIVE_CHECKOUT, checkoutUtm)}>
           QUERO O COMPLETO POR R$ 27,90 <ArrowRight size={17} />
         </a>
         <button className="upgrade-decline" onClick={() => checkout("essential", true)}>
