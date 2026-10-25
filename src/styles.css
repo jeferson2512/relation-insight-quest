@@ -1348,3 +1348,5 @@ details p {
 .sample-marquee-group img { display: block; width: 350px; height: auto; aspect-ratio: 4 / 5; border-radius: 12px; flex-shrink: 0; }
 @keyframes maps-drift-right { from { transform: translateX(-33.333333%); } to { transform: translateX(0); } }
 @media (max-width: 760px) { .sample-marquee-group img { width: 78vw; max-width: 350px; } }
+
+.sample-marquee-reverse .sample-marquee-rail { animation-direction: reverse; animation-duration: 91s; }

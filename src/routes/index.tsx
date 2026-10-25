@@ -17,6 +17,7 @@ const samples = [
   { slug: "erros", title: "Erros para evitar" },
   { slug: "checklist", title: "Checklist para começar" },
 ];
+const moreSamples = [{"slug": "amostras-vendem", "title": "Como criar amostras"}, {"slug": "prompts-producao", "title": "Prompts para produzir mais"}, {"slug": "arquivos-entregas", "title": "Organização e entregas"}, {"slug": "atendimento-whatsapp", "title": "Atendimento no WhatsApp"}, {"slug": "divulgacao-instagram", "title": "Divulgação no Instagram"}, {"slug": "fechar-vendas", "title": "Como fechar vendas"}, {"slug": "entrega-agil", "title": "Entrega com IA"}, {"slug": "feedback-indicacoes", "title": "Feedback e indicações"}, {"slug": "escalar-renda", "title": "Como escalar"}, {"slug": "plano-30dias", "title": "Plano de 30 dias"}];
 export const Route = createFileRoute("/")({ component: Index });
 function Index() {
   const [notice, setNotice] = useState("");
@@ -140,6 +141,19 @@ function Index() {
                   {samples.map((sample) => (
                     <img key={sample.slug} src={`/images/amostras/${sample.slug}-560.webp`}
                       width={560} height={700} decoding="async"
+                      alt={`Página real: ${sample.title}`} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="sample-marquee sample-marquee-reverse" aria-label="Mais amostras reais do material">
+            <div className="sample-marquee-rail">
+              {[0, 1, 2].map((group) => (
+                <div className="sample-marquee-group" key={group} aria-hidden={group !== 0}>
+                  {moreSamples.map((sample) => (
+                    <img key={sample.slug} src={`/images/amostras/${sample.slug}-560.webp`}
+                      width={560} height={700} decoding="async" loading="lazy"
                       alt={`Página real: ${sample.title}`} />
                   ))}
                 </div>
