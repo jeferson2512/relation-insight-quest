@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Check, BookOpen, GitBranch, ShieldCheck, Rocket } from "lucide-react";
 import { CHECKOUT, essentialItems, completeItems } from "../lib/mapa-quiz";
 import { faqs, offerContents, jobs, audiences, reasons, how } from "../lib/offer-content";
@@ -20,42 +20,6 @@ const samples = [
 export const Route = createFileRoute("/")({ component: Index });
 function Index() {
   const [notice, setNotice] = useState("");
-  const sampleTrack = useRef<HTMLDivElement>(null);
-  const sampleDialog = useRef<HTMLDialogElement>(null);
-  const [activeSample, setActiveSample] = useState<(typeof samples)[number] | null>(null);
-  const [sampleIndex, setSampleIndex] = useState(0);
-  const [samplesPaused, setSamplesPaused] = useState(false);
-  const sampleInteractionUntil = useRef(0);
-  useEffect(() => {
-    if (
-      samplesPaused ||
-      activeSample ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
-    let frame = 0;
-    let previousTime = 0;
-    function animate(time: number) {
-      const track = sampleTrack.current;
-      const card = track?.firstElementChild as HTMLElement | null;
-      const elapsed = previousTime ? Math.min(time - previousTime, 50) : 0;
-      previousTime = time;
-      if (track && card && !document.hidden && Date.now() >= sampleInteractionUntil.current) {
-        const bounds = track.getBoundingClientRect();
-        if (bounds.bottom > 0 && bounds.top < window.innerHeight) {
-          const cycle = (card.offsetWidth + 20) * samples.length;
-          // Identical groups make the reset invisible as the maps drift to the right.
-          let left = track.scrollLeft;
-          if (left < cycle) left += cycle;
-          if (left >= cycle * 2) left -= cycle;
-          track.scrollLeft = left - elapsed * 0.035;
-        }
-      }
-      frame = window.requestAnimationFrame(animate);
-    }
-    frame = window.requestAnimationFrame(animate);
-    return () => window.cancelAnimationFrame(frame);
-  }, [samplesPaused, activeSample]);
   useEffect(() => {
     captureUtm();
     window.history.scrollRestoration = "manual";
@@ -79,24 +43,6 @@ function Index() {
       window.removeEventListener("pageshow", resetOnRestore);
     };
   }, []);
-  useEffect(() => {
-    if (!activeSample) return;
-    const dialog = sampleDialog.current;
-    dialog?.showModal();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      dialog?.close();
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [activeSample]);
-  function moveSample(direction: number) {
-    sampleInteractionUntil.current = Date.now() + 10000;
-    const track = sampleTrack.current;
-    const card = track?.firstElementChild as HTMLElement | null;
-    if (track && card)
-      track.scrollBy({ left: direction * (card.offsetWidth + 20), behavior: "smooth" });
-  }
   function checkout(plan: keyof typeof CHECKOUT) {
     const url = CHECKOUT[plan];
     if (!url) {
@@ -169,23 +115,13 @@ function Index() {
                 fetchPriority="high"
               />
             </div>
-            <figcaption>Páginas reais do material digital • Amplie as amostras abaixo</figcaption>
+            <figcaption>Páginas reais do material digital • Veja outras amostras abaixo</figcaption>
           </figure>
         </section>
         <section
           className="new-section real-samples"
           id="amostras"
           aria-labelledby="samples-heading"
-          onFocusCapture={(event) => {
-            if (event.target.matches(":focus-visible")) setSamplesPaused(true);
-          }}
-          onBlurCapture={(event) => {
-            if (!event.currentTarget.contains(event.relatedTarget as Node | null))
-              setSamplesPaused(false);
-          }}
-          onTouchStart={() => {
-            sampleInteractionUntil.current = Date.now() + 10000;
-          }}
         >
           <div className="sample-heading-row">
             <div>
@@ -195,62 +131,21 @@ function Index() {
                 <em>POR DENTRO.</em>
               </h2>
             </div>
-            <div className="sample-controls">
-              <button onClick={() => moveSample(-1)} aria-label="Amostra anterior">
-                ←
-              </button>
-              <button onClick={() => moveSample(1)} aria-label="Próxima amostra">
-                →
-              </button>
+          </div>
+          <p className="section-intro">Confira algumas páginas reais do material. Veja na oferta os itens incluídos em cada kit.</p>
+          <div className="sample-marquee" aria-label="Amostras reais do material">
+            <div className="sample-marquee-rail">
+              {[0, 1, 2].map((group) => (
+                <div className="sample-marquee-group" key={group} aria-hidden={group !== 1}>
+                  {samples.map((sample) => (
+                    <img key={sample.slug} src={`/images/amostras/${sample.slug}-560.webp`}
+                      width={560} height={700} decoding="async"
+                      alt={`Página real: ${sample.title}`} />
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
-          <p className="section-intro">
-            Explore as amostras e toque em um mapa para ampliar e ler. Confira na oferta os itens
-            incluídos em cada kit.
-          </p>
-          <div
-            className="sample-track"
-            ref={sampleTrack}
-            role="region"
-            aria-label="Carrossel de amostras reais"
-            tabIndex={0}
-            onKeyDown={(event) => {
-              if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-                event.preventDefault();
-                moveSample(event.key === "ArrowRight" ? 1 : -1);
-              }
-            }}
-            onScroll={() => {
-              const track = sampleTrack.current;
-              const card = track?.firstElementChild as HTMLElement | null;
-              if (track && card)
-                setSampleIndex(Math.round(track.scrollLeft / (card.offsetWidth + 20)) % samples.length);
-            }}
-          >
-            {[...samples, ...samples, ...samples].map((sample, index) => (
-              <article className="sample-card" key={`${sample.slug}-${index}`}>
-                <button
-                  onClick={() => setActiveSample(sample)}
-                  aria-label={`Ampliar mapa: ${sample.title}`}
-                >
-                  <img
-                    src={`/images/amostras/${sample.slug}-560.webp`}
-                    width={560}
-                    height={700}
-                    loading="lazy"
-                    decoding="async"
-                    alt={`Página real do material: ${sample.title}`}
-                  />
-                  <span>AMPLIAR MAPA ↗</span>
-                </button>
-                <h3>{sample.title}</h3>
-              </article>
-            ))}
-          </div>
-          <p className="sample-counter">
-            {Math.min(sampleIndex + 1, samples.length)} / {samples.length} · Movimento contínuo ·
-            Deslize para explorar
-          </p>
           <a href="#kits" className="gold-button">
             QUERO ESCOLHER MEU KIT <ArrowRight size={18} />
           </a>
@@ -429,31 +324,7 @@ function Index() {
           </details>
         ))}
       </section>
-      <dialog
-        ref={sampleDialog}
-        className="sample-dialog"
-        aria-label={activeSample ? `Mapa ampliado: ${activeSample.title}` : "Mapa ampliado"}
-        onCancel={() => setActiveSample(null)}
-        onClick={(event) => {
-          if (event.target === event.currentTarget) setActiveSample(null);
-        }}
-      >
-        <button
-          className="sample-close"
-          onClick={() => setActiveSample(null)}
-          aria-label="Fechar mapa ampliado"
-        >
-          Fechar ×
-        </button>
-        {activeSample && (
-          <img
-            src={`/images/amostras/${activeSample.slug}-1122.webp`}
-            alt={`Mapa ampliado: ${activeSample.title}`}
-            width={1122}
-            height={1402}
-          />
-        )}
-      </dialog>
+
       <footer className="new-footer">
         SIDE HUSTLE COM IA
         <p>

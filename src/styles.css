@@ -1341,3 +1341,10 @@ details p {
     max-width: 460px;
   }
 }
+
+.sample-marquee { overflow: hidden; width: 100%; margin: 30px 0; }
+.sample-marquee-rail { display: flex; width: max-content; animation: maps-drift-right 100s linear infinite; will-change: transform; }
+.sample-marquee-group { display: flex; gap: 20px; padding-right: 20px; flex-shrink: 0; }
+.sample-marquee-group img { display: block; width: 350px; height: auto; aspect-ratio: 4 / 5; border-radius: 12px; flex-shrink: 0; }
+@keyframes maps-drift-right { from { transform: translateX(-33.333333%); } to { transform: translateX(0); } }
+@media (max-width: 760px) { .sample-marquee-group img { width: 78vw; max-width: 350px; } }
