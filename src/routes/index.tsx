@@ -1,17 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Check, BookOpen, GitBranch, ShieldCheck, Rocket } from "lucide-react";
-import { CHECKOUT, EXCLUSIVE_CHECKOUT, essentialItems, completeItems } from "../lib/mapa-quiz";
-import { offerContents, jobs, audiences, reasons, how } from "../lib/offer-content";
+import { CHECKOUT, essentialItems, completeItems } from "../lib/mapa-quiz";
+import { faqs, offerContents, jobs, audiences, reasons, how } from "../lib/offer-content";
 import { captureUtm, withUtm } from "../lib/analytics";
+const samples = [
+  { slug: "ferramentas", title: "Ferramentas de IA" },
+  { slug: "textos", title: "Serviços de texto" },
+  { slug: "design", title: "Design e criativos" },
+  { slug: "videos", title: "Vídeos curtos" },
+  { slug: "produtos", title: "Produtos digitais" },
+  { slug: "oferta", title: "Como montar sua oferta" },
+  { slug: "clientes", title: "Como encontrar clientes" },
+  { slug: "precos", title: "Como pensar no preço" },
+  { slug: "plano", title: "Plano de sete dias" },
+  { slug: "erros", title: "Erros para evitar" },
+  { slug: "checklist", title: "Checklist para começar" },
+];
 export const Route = createFileRoute("/")({ component: Index });
 function Index() {
   const [notice, setNotice] = useState("");
-  const [upgradeOpen, setUpgradeOpen] = useState(false);
-  const [checkoutUtm, setCheckoutUtm] = useState<Record<string, string>>({});
-  const upgradeDialog = useRef<HTMLDialogElement>(null);
+  const sampleTrack = useRef<HTMLDivElement>(null);
+  const sampleDialog = useRef<HTMLDialogElement>(null);
+  const [activeSample, setActiveSample] = useState<(typeof samples)[number] | null>(null);
+  const [sampleIndex, setSampleIndex] = useState(0);
   useEffect(() => {
-    setCheckoutUtm(captureUtm());
+    captureUtm();
     window.history.scrollRestoration = "manual";
     if (window.location.hash) {
       window.history.replaceState(
@@ -34,8 +48,8 @@ function Index() {
     };
   }, []);
   useEffect(() => {
-    if (!upgradeOpen) return;
-    const dialog = upgradeDialog.current;
+    if (!activeSample) return;
+    const dialog = sampleDialog.current;
     dialog?.showModal();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -43,12 +57,14 @@ function Index() {
       dialog?.close();
       document.body.style.overflow = previousOverflow;
     };
-  }, [upgradeOpen]);
-  function checkout(plan: keyof typeof CHECKOUT, skipOffer = false) {
-    if (plan === "essential" && !skipOffer) {
-      setUpgradeOpen(true);
-      return;
-    }
+  }, [activeSample]);
+  function moveSample(direction: number) {
+    const track = sampleTrack.current;
+    const card = track?.firstElementChild as HTMLElement | null;
+    if (track && card)
+      track.scrollBy({ left: direction * (card.offsetWidth + 20), behavior: "smooth" });
+  }
+  function checkout(plan: keyof typeof CHECKOUT) {
     const url = CHECKOUT[plan];
     if (!url) {
       setNotice("Checkout indisponível.");
@@ -75,19 +91,28 @@ function Index() {
           <div>
             <span className="gold-kicker">🚀 SIDE HUSTLE COM IA</span>
             <h1>
-              DE R$ 0 A<br />
-              <em>R$ 1.000/MÊS</em>
-              <span className="hero-product-name">COM SIDE HUSTLE</span>
+              SAIBA O QUE <em>OFERECER COM IA.</em>
+              <span className="hero-product-name">E COMO DAR O PRIMEIRO PASSO.</span>
             </h1>
-            <p className="hero-sub">USANDO FERRAMENTAS DE IA QUE VOCÊ JÁ TEM ACESSO</p>
-            <p className="new-body">
-              E se você pudesse lançar uma fonte de renda online lucrativa esta semana, sem precisar
-              largar o emprego, sem um grande orçamento e sem ser um especialista em tecnologia?
-              Este e-book mostra exatamente como!
+            <p className="hero-sub">
+              Ideias de serviços, ferramentas e próximos passos em mapas mentais.
             </p>
-            <a href="#kits" className="gold-button">
-              QUERO CONHECER A OFERTA <ArrowRight size={19} />
+            <p className="new-body">
+              Explore textos, artes e vídeos para pequenos negócios. O Side Hustle com IA ajuda você
+              a escolher uma atividade, organizar sua oferta e começar a divulgá-la.
+            </p>
+            <a href="#amostras" className="gold-button">
+              VER OS MAPAS POR DENTRO <ArrowRight size={19} />
             </a>
+            <p className="hero-buyline">
+              Kits a partir de <b>R$ 17,90</b> • Pagamento único
+            </p>
+            <a href="#kits" className="text-cta">
+              Já quero escolher meu kit →
+            </a>
+            <p className="hero-reassurance">
+              📱 Material digital · ♾️ Acesso vitalício · 🛡️ 7 dias de garantia
+            </p>
           </div>
           <figure className="book-hero">
             <img
@@ -101,6 +126,78 @@ function Index() {
             />
             <figcaption>Produto digital • Mockup ilustrativo</figcaption>
           </figure>
+        </section>
+        <section
+          className="new-section real-samples"
+          id="amostras"
+          aria-labelledby="samples-heading"
+        >
+          <div className="sample-heading-row">
+            <div>
+              <span className="gold-kicker">PÁGINAS REAIS DO MATERIAL</span>
+              <h2 id="samples-heading">
+                VEJA COMO É<br />
+                <em>POR DENTRO.</em>
+              </h2>
+            </div>
+            <div className="sample-controls">
+              <button onClick={() => moveSample(-1)} aria-label="Amostra anterior">
+                ←
+              </button>
+              <button onClick={() => moveSample(1)} aria-label="Próxima amostra">
+                →
+              </button>
+            </div>
+          </div>
+          <p className="section-intro">
+            Explore as amostras e toque em um mapa para ampliar e ler. Confira na oferta os itens
+            incluídos em cada kit.
+          </p>
+          <div
+            className="sample-track"
+            ref={sampleTrack}
+            role="region"
+            aria-label="Carrossel de amostras reais"
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+                event.preventDefault();
+                moveSample(event.key === "ArrowRight" ? 1 : -1);
+              }
+            }}
+            onScroll={() => {
+              const track = sampleTrack.current;
+              const card = track?.firstElementChild as HTMLElement | null;
+              if (track && card)
+                setSampleIndex(Math.round(track.scrollLeft / (card.offsetWidth + 20)));
+            }}
+          >
+            {samples.map((sample) => (
+              <article className="sample-card" key={sample.slug}>
+                <button
+                  onClick={() => setActiveSample(sample)}
+                  aria-label={`Ampliar mapa: ${sample.title}`}
+                >
+                  <img
+                    src={`/images/amostras/${sample.slug}-560.webp`}
+                    width={560}
+                    height={700}
+                    loading="lazy"
+                    decoding="async"
+                    alt={`Página real do material: ${sample.title}`}
+                  />
+                  <span>AMPLIAR MAPA ↗</span>
+                </button>
+                <h3>{sample.title}</h3>
+              </article>
+            ))}
+          </div>
+          <p className="sample-counter" aria-live="polite">
+            {Math.min(sampleIndex + 1, samples.length)} / {samples.length} · Deslize para explorar
+          </p>
+          <a href="#kits" className="gold-button">
+            QUERO ESCOLHER MEU KIT <ArrowRight size={18} />
+          </a>
         </section>
         <section className="new-section">
           <span className="gold-kicker">O QUE HÁ DENTRO</span>
@@ -120,7 +217,7 @@ function Index() {
           </ul>
         </section>
         <section className="new-section">
-          <span className="gold-kicker">OS 10 TRABALHOS PARALELOS COM IA QUE VOCÊ DESCOBRIU</span>
+          <span className="gold-kicker">POSSIBILIDADES PARA EXPLORAR</span>
           <h2>
             10 CAMINHOS
             <br />
@@ -137,7 +234,7 @@ function Index() {
           </div>
         </section>
         <section className="new-section">
-          <span className="gold-kicker">PARA QUEM É ESTE INSTRUMENTO?</span>
+          <span className="gold-kicker">PARA QUEM É O MATERIAL?</span>
           <h2>
             ESSE GUIA
             <br />
@@ -155,7 +252,7 @@ function Index() {
           </ul>
         </section>
         <section className="new-section">
-          <span className="gold-kicker">POR QUE ESTE GUIA FUNCIONA</span>
+          <span className="gold-kicker">PARA COMEÇAR COM MAIS CLAREZA</span>
           <h2>
             UM PLANO PARA
             <br />
@@ -211,8 +308,8 @@ function Index() {
                 </h3>
                 <p>
                   {plan === "essential"
-                    ? "Para conhecer e consultar."
-                    : "Para consultar e experimentar."}
+                    ? "Para entender as possibilidades e escolher por onde começar."
+                    : "Para aprofundar a consulta e praticar com materiais extras."}
                 </p>
                 <div className="plan-includes">
                   {plan === "essential"
@@ -239,8 +336,12 @@ function Index() {
                   <span>♾️ Acesso vitalício ao conteúdo</span>
                 </div>
                 <button className="primary" onClick={() => checkout(plan)}>
-                  Escolher {plan === "essential" ? "Básico" : "Completo"} <ArrowRight size={18} />
+                  Quero o {plan === "essential" ? "Básico" : "Completo"} <ArrowRight size={18} />
                 </button>
+                <p className="checkout-fee">
+                  A Cakto acrescenta R$ 0,99 de taxa de serviço. Total no checkout: R${" "}
+                  {plan === "essential" ? "18,89" : "38,89"}.
+                </p>
               </section>
             ))}
           </div>
@@ -260,53 +361,49 @@ function Index() {
           </section>
         </section>
       </main>
+      <section className="new-section faq-section">
+        <span className="gold-kicker">ANTES DE ESCOLHER</span>
+        <h2>
+          DÚVIDAS <em>FREQUENTES.</em>
+        </h2>
+        {faqs.map(([question, answer]) => (
+          <details key={question}>
+            <summary>{question}</summary>
+            <p>{answer}</p>
+          </details>
+        ))}
+      </section>
       <dialog
-        ref={upgradeDialog}
-        className="upgrade-dialog"
-        aria-labelledby="upgrade-title"
-        aria-describedby="upgrade-description"
-        onCancel={() => setUpgradeOpen(false)}
+        ref={sampleDialog}
+        className="sample-dialog"
+        aria-label={activeSample ? `Mapa ampliado: ${activeSample.title}` : "Mapa ampliado"}
+        onCancel={() => setActiveSample(null)}
         onClick={(event) => {
-          if (event.target === event.currentTarget) setUpgradeOpen(false);
+          if (event.target === event.currentTarget) setActiveSample(null);
         }}
       >
         <button
-          className="upgrade-close"
-          aria-label="Fechar oferta"
-          onClick={() => setUpgradeOpen(false)}
+          className="sample-close"
+          onClick={() => setActiveSample(null)}
+          aria-label="Fechar mapa ampliado"
         >
-          ×
+          Fechar ×
         </button>
-        <span className="gold-kicker">UMA OPÇÃO ANTES DE CONTINUAR</span>
-        <h2 id="upgrade-title">
-          LEVE O<br />
-          <em>KIT COMPLETO</em>
-        </h2>
-        <p id="upgrade-description">
-          Adicione R$ 10 ao Kit Básico de R$ 17,90 e receba também os materiais do Completo.
-        </p>
-        <ul>
-          {completeItems.slice(1).map((item) => (
-            <li key={item}>
-              <Check size={16} />
-              {item}
-            </li>
-          ))}
-        </ul>
-        <div className="upgrade-price">
-          <span>Total da oferta</span>
-          <strong>R$ 27,90</strong>
-          <small>Pagamento único • Acesso vitalício ao conteúdo</small>
-        </div>
-        <a className="gold-button" href={withUtm(EXCLUSIVE_CHECKOUT, checkoutUtm)}>
-          QUERO O COMPLETO POR R$ 27,90 <ArrowRight size={17} />
-        </a>
-        <button className="upgrade-decline" onClick={() => checkout("essential", true)}>
-          Continuar com o Básico por R$ 17,90
-        </button>
+        {activeSample && (
+          <img
+            src={`/images/amostras/${activeSample.slug}-1122.webp`}
+            alt={`Mapa ampliado: ${activeSample.title}`}
+            width={1122}
+            height={1402}
+          />
+        )}
       </dialog>
       <footer className="new-footer">
-        SIDE HUSTLE COM IA<p>Produto digital. Mockup ilustrativo.</p>
+        SIDE HUSTLE COM IA
+        <p>
+          Material educativo digital. Resultados dependem da aplicação, da oferta e do mercado. Não
+          há garantia de renda.
+        </p>
       </footer>
     </div>
   );
