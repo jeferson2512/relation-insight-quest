@@ -1350,3 +1350,10 @@ details p {
 @media (max-width: 760px) { .sample-marquee-group img { width: 78vw; max-width: 350px; } }
 
 .sample-marquee-reverse .sample-marquee-rail { animation-direction: reverse; animation-duration: 91s; }
+
+.testimonial-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; margin-top: 30px; align-items: start; }
+.testimonial-grid figure { margin: 0; overflow: hidden; border: 1px solid #8c772b70; border-radius: 16px; background: #f5f1e9; }
+.testimonial-grid img { display:block; width:100%; height:auto; }
+.testimonial-note { color: #aaa99c; font-size: 12px; text-align:center; margin-top:20px; }
+@media (max-width: 900px) { .testimonial-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 480px) { .testimonial-grid { grid-template-columns: minmax(0,1fr); max-width: 340px; margin-inline:auto; } }

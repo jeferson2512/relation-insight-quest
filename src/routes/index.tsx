@@ -252,6 +252,18 @@ function Index() {
             ))}
           </ol>
         </section>
+        <section className="new-section testimonials" aria-labelledby="testimonials-heading">
+          <span className="gold-kicker">DEPOIMENTOS</span>
+          <h2 id="testimonials-heading">MENSAGENS DE QUEM<br /><em>RECEBEU O MATERIAL.</em></h2>
+          <div className="testimonial-grid">
+            <figure><img src="/images/depoimentos/macio.webp" alt="Mensagem de Macio sobre sua experiência" width={600} height={1200} loading="lazy" decoding="async" /></figure>
+            <figure><img src="/images/depoimentos/andre.webp" alt="Mensagem de André sobre o material" width={600} height={1200} loading="lazy" decoding="async" /></figure>
+            <figure><img src="/images/depoimentos/cininia.webp" alt="Mensagem de Cinínia sobre o material" width={600} height={1200} loading="lazy" decoding="async" /></figure>
+            <figure><img src="/images/depoimentos/lucas.webp" alt="Mensagem de Lucas sobre o material" width={600} height={1200} loading="lazy" decoding="async" /></figure>
+            <figure><img src="/images/depoimentos/fernanda-maria.webp" alt="Mensagens de Fernanda e Maria sobre o material" width={600} height={1200} loading="lazy" decoding="async" /></figure>
+          </div>
+          <p className="testimonial-note">Relatos individuais. A experiência e os resultados variam de pessoa para pessoa.</p>
+        </section>
         <section className="new-section purchase-section" id="kits">
           <span className="gold-kicker">ESCOLHA SUA OFERTA</span>
           <h2>
