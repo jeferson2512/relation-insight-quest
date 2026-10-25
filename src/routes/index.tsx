@@ -114,17 +114,29 @@ function Index() {
               📱 Material digital · ♾️ Acesso vitalício · 🛡️ 7 dias de garantia
             </p>
           </div>
-          <figure className="book-hero">
-            <img
-              src="/images/mockup-side-hustle-800.webp"
-              srcSet="/images/mockup-side-hustle-480.webp 480w, /images/mockup-side-hustle-800.webp 800w, /images/mockup-side-hustle-1254.webp 1254w"
-              sizes="(max-width: 760px) calc(100vw - 40px), (max-width: 1200px) 46vw, 560px"
-              width={1254}
-              height={1254}
-              alt="Mockup do e-book Side Hustle com IA, com tablet, celular e materiais de apoio"
-              fetchPriority="high"
-            />
-            <figcaption>Produto digital • Mockup ilustrativo</figcaption>
+          <figure className="book-hero real-hero">
+            <span className="real-hero-label">SIDE HUSTLE COM IA · MAPAS MENTAIS</span>
+            <div className="real-hero-pages">
+              <img
+                className="hero-page-back"
+                src="/images/amostras/oferta-560.webp"
+                width={560}
+                height={700}
+                alt="Mapa real sobre como montar sua oferta"
+                decoding="async"
+              />
+              <img
+                className="hero-page-front"
+                src="/images/amostras/ferramentas-560.webp"
+                srcSet="/images/amostras/ferramentas-560.webp 560w, /images/amostras/ferramentas-1122.webp 1122w"
+                sizes="(max-width: 760px) 70vw, 340px"
+                width={560}
+                height={700}
+                alt="Página real do Side Hustle com IA: ferramentas e suas aplicações"
+                fetchPriority="high"
+              />
+            </div>
+            <figcaption>Páginas reais do material digital • Amplie as amostras abaixo</figcaption>
           </figure>
         </section>
         <section
