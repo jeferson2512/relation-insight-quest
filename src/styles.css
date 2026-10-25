@@ -1357,3 +1357,12 @@ details p {
 .testimonial-note { color: #aaa99c; font-size: 12px; text-align:center; margin-top:20px; }
 @media (max-width: 900px) { .testimonial-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 480px) { .testimonial-grid { grid-template-columns: minmax(0,1fr); max-width: 340px; margin-inline:auto; } }
+
+@media (max-width: 760px) {
+  .sample-marquee { margin: 16px 0; }
+  .sample-marquee-group { gap: 12px; padding-right: 12px; }
+  .sample-marquee-group img { width: clamp(150px, 46vw, 190px); border-radius: 8px; }
+  .testimonial-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-width: 440px; margin: 20px auto 0; }
+  .testimonial-grid figure { border-radius: 10px; }
+  .real-samples.new-section, .testimonials.new-section { padding-top: 32px; padding-bottom: 32px; }
+}
