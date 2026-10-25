@@ -1166,7 +1166,7 @@ details p {
   display: flex;
   gap: 20px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: none;
   padding: 4px 2px 18px;
   scrollbar-color: #e8c54e #132018;
 }

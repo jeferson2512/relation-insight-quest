@@ -33,19 +33,28 @@ function Index() {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     )
       return;
-    const timer = window.setInterval(() => {
+    let frame = 0;
+    let previousTime = 0;
+    function animate(time: number) {
       const track = sampleTrack.current;
       const card = track?.firstElementChild as HTMLElement | null;
-      if (!track || !card || document.hidden || Date.now() < sampleInteractionUntil.current) return;
-      const bounds = track.getBoundingClientRect();
-      if (bounds.bottom <= 0 || bounds.top >= window.innerHeight) return;
-      const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;
-      track.scrollTo({
-        left: atEnd ? 0 : track.scrollLeft + card.offsetWidth + 20,
-        behavior: "smooth",
-      });
-    }, 4000);
-    return () => window.clearInterval(timer);
+      const elapsed = previousTime ? Math.min(time - previousTime, 50) : 0;
+      previousTime = time;
+      if (track && card && !document.hidden && Date.now() >= sampleInteractionUntil.current) {
+        const bounds = track.getBoundingClientRect();
+        if (bounds.bottom > 0 && bounds.top < window.innerHeight) {
+          const cycle = (card.offsetWidth + 20) * samples.length;
+          // Identical groups make the reset invisible as the maps drift to the right.
+          let left = track.scrollLeft;
+          if (left < cycle) left += cycle;
+          if (left >= cycle * 2) left -= cycle;
+          track.scrollLeft = left - elapsed * 0.035;
+        }
+      }
+      frame = window.requestAnimationFrame(animate);
+    }
+    frame = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frame);
   }, [samplesPaused, activeSample]);
   useEffect(() => {
     captureUtm();
@@ -167,9 +176,9 @@ function Index() {
           className="new-section real-samples"
           id="amostras"
           aria-labelledby="samples-heading"
-          onMouseEnter={() => setSamplesPaused(true)}
-          onMouseLeave={() => setSamplesPaused(false)}
-          onFocusCapture={() => setSamplesPaused(true)}
+          onFocusCapture={(event) => {
+            if (event.target.matches(":focus-visible")) setSamplesPaused(true);
+          }}
           onBlurCapture={(event) => {
             if (!event.currentTarget.contains(event.relatedTarget as Node | null))
               setSamplesPaused(false);
@@ -215,11 +224,11 @@ function Index() {
               const track = sampleTrack.current;
               const card = track?.firstElementChild as HTMLElement | null;
               if (track && card)
-                setSampleIndex(Math.round(track.scrollLeft / (card.offsetWidth + 20)));
+                setSampleIndex(Math.round(track.scrollLeft / (card.offsetWidth + 20)) % samples.length);
             }}
           >
-            {samples.map((sample) => (
-              <article className="sample-card" key={sample.slug}>
+            {[...samples, ...samples, ...samples].map((sample, index) => (
+              <article className="sample-card" key={`${sample.slug}-${index}`}>
                 <button
                   onClick={() => setActiveSample(sample)}
                   aria-label={`Ampliar mapa: ${sample.title}`}
@@ -239,7 +248,7 @@ function Index() {
             ))}
           </div>
           <p className="sample-counter">
-            {Math.min(sampleIndex + 1, samples.length)} / {samples.length} · Passagem automática ·
+            {Math.min(sampleIndex + 1, samples.length)} / {samples.length} · Movimento contínuo ·
             Deslize para explorar
           </p>
           <a href="#kits" className="gold-button">
