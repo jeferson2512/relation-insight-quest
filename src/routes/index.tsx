@@ -24,6 +24,29 @@ function Index() {
   const sampleDialog = useRef<HTMLDialogElement>(null);
   const [activeSample, setActiveSample] = useState<(typeof samples)[number] | null>(null);
   const [sampleIndex, setSampleIndex] = useState(0);
+  const [samplesPaused, setSamplesPaused] = useState(false);
+  const sampleInteractionUntil = useRef(0);
+  useEffect(() => {
+    if (
+      samplesPaused ||
+      activeSample ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
+    const timer = window.setInterval(() => {
+      const track = sampleTrack.current;
+      const card = track?.firstElementChild as HTMLElement | null;
+      if (!track || !card || document.hidden || Date.now() < sampleInteractionUntil.current) return;
+      const bounds = track.getBoundingClientRect();
+      if (bounds.bottom <= 0 || bounds.top >= window.innerHeight) return;
+      const atEnd = track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;
+      track.scrollTo({
+        left: atEnd ? 0 : track.scrollLeft + card.offsetWidth + 20,
+        behavior: "smooth",
+      });
+    }, 4000);
+    return () => window.clearInterval(timer);
+  }, [samplesPaused, activeSample]);
   useEffect(() => {
     captureUtm();
     window.history.scrollRestoration = "manual";
@@ -59,6 +82,7 @@ function Index() {
     };
   }, [activeSample]);
   function moveSample(direction: number) {
+    sampleInteractionUntil.current = Date.now() + 10000;
     const track = sampleTrack.current;
     const card = track?.firstElementChild as HTMLElement | null;
     if (track && card)
@@ -143,6 +167,16 @@ function Index() {
           className="new-section real-samples"
           id="amostras"
           aria-labelledby="samples-heading"
+          onMouseEnter={() => setSamplesPaused(true)}
+          onMouseLeave={() => setSamplesPaused(false)}
+          onFocusCapture={() => setSamplesPaused(true)}
+          onBlurCapture={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+              setSamplesPaused(false);
+          }}
+          onTouchStart={() => {
+            sampleInteractionUntil.current = Date.now() + 10000;
+          }}
         >
           <div className="sample-heading-row">
             <div>
@@ -204,8 +238,9 @@ function Index() {
               </article>
             ))}
           </div>
-          <p className="sample-counter" aria-live="polite">
-            {Math.min(sampleIndex + 1, samples.length)} / {samples.length} · Deslize para explorar
+          <p className="sample-counter">
+            {Math.min(sampleIndex + 1, samples.length)} / {samples.length} · Passagem automática ·
+            Deslize para explorar
           </p>
           <a href="#kits" className="gold-button">
             QUERO ESCOLHER MEU KIT <ArrowRight size={18} />
